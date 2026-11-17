@@ -1,0 +1,9 @@
+.trend { font-size: 31rpx; margin: 20rpx 0; color: #f2c6a7; }
+.metric-inputs { display: flex; gap: 14rpx; }
+.metric-inputs input { flex: 1; min-width: 0; }
+.save { width: 100%; margin-top: 16rpx; }
+.section { color: #aaa; margin: 42rpx 0 8rpx; }
+.record-group { border-radius: 16rpx; overflow: hidden; --td-cell-bg-color: #161617; --td-cell-title-color: #f5f1eb; --td-cell-note-color: #888; }
+.history { padding: 27rpx 0; border-bottom: 1rpx solid #28282a; }
+.meta { font-size: 23rpx; margin-top: 8rpx; }
+.empty { padding: 60rpx 0; text-align: center; }

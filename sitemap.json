@@ -1,0 +1,4 @@
+{
+  "desc": "个人本地工具，无需被索引",
+  "rules": [{ "action": "disallow", "page": "*" }]
+}

@@ -1,0 +1,23 @@
+{
+  "description": "个人自用原生训练助手",
+  "packOptions": { "ignore": ["tests", "artifacts"] },
+  "setting": {
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "minified": true,
+    "urlCheck": false,
+    "packNpmManually": true,
+    "packNpmRelationList": [
+      {
+        "packageJsonPath": "./package.json",
+        "miniprogramNpmDistDir": "./"
+      }
+    ]
+  },
+  "compileType": "miniprogram",
+  "libVersion": "3.7.12",
+  "appid": "touristappid",
+  "projectname": "native-fitness-coach",
+  "condition": {}
+}

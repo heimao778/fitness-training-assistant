@@ -1,0 +1,1444 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <!-- 单文件离线试用版：无外部脚本、样式、接口或登录 -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>训练助手试用版</title>
+  <style>
+:root{
+  color-scheme:light;
+  --bg:#F2F2F7;
+  --card:#FFFFFF;
+  --line:rgba(60,60,67,.12);
+  --sep:rgba(60,60,67,.29);
+  --muted:#8E8E93;
+  --orange:#007AFF; /* class name kept for JS; value is system blue */
+  --blue:#007AFF;
+  --text:#000000;
+  --label2:#3C3C43;
+  --fill:rgba(120,120,128,.16);
+  --fill2:#E5E5EA;
+  --danger-bg:#FFF2F1;
+  --danger-text:#FF3B30;
+  --safe-bg:#FFF9EB;
+  --phone-w:390px;
+  --tab-h:56px;
+  --radius:12px;
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue","PingFang SC",sans-serif;
+}
+*{box-sizing:border-box}[hidden]{display:none!important}
+html,body{height:100%}
+body{
+  margin:0;
+  background:#E5E5EA;
+  color:var(--text);
+  font:16px/1.4 var(--font);
+  -webkit-font-smoothing:antialiased;
+}
+button,input,select{font:inherit;color:inherit}
+button{-webkit-tap-highlight-color:transparent}
+
+.desktop-stage{
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+  padding:28px 16px 32px;
+}
+.phone{
+  width:min(100%,var(--phone-w));
+  min-height:min(844px,calc(100vh - 60px));
+  background:var(--bg);
+  border-radius:28px;
+  box-shadow:0 0 0 1px rgba(0,0,0,.06),0 18px 48px rgba(0,0,0,.10);
+  position:relative;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+.status-bar{
+  height:28px;
+  padding:8px 18px 0;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:12px;
+  font-weight:600;
+  letter-spacing:-.01em;
+  color:var(--text);
+  background:var(--bg);
+  flex:none;
+}
+.status-bar .status-icons{font-size:11px;opacity:.85;letter-spacing:.5px}
+
+.preview-banner{
+  position:sticky;top:0;z-index:10;
+  background:#FFF4E5;
+  color:#9A6700;
+  text-align:center;
+  padding:7px 12px;
+  font-size:11px;
+  line-height:1.35;
+  border-bottom:1px solid rgba(154,103,0,.15);
+}
+.preview-banner.temporary{
+  background:#FFECEC;
+  color:#C62828;
+  font-weight:600;
+}
+.startup-fallback p{margin:8px 0;font-size:15px}
+.startup-fallback strong{font-size:16px}
+
+#app{
+  width:100%;
+  flex:1;
+  min-height:0;
+  margin:0;
+  background:var(--bg);
+  padding:8px 16px calc(var(--tab-h) + 18px);
+  overflow:auto;
+  -webkit-overflow-scrolling:touch;
+}
+
+/* Typography — iOS HIG */
+h1{
+  font-size:28px;
+  line-height:1.15;
+  margin:4px 0 2px;
+  font-weight:700;
+  letter-spacing:-.02em;
+}
+h2{
+  font-size:17px;
+  line-height:1.25;
+  margin:0;
+  font-weight:600;
+  letter-spacing:-.01em;
+}
+.sub,.muted,.hint{color:var(--muted)}
+.sub{margin:0 0 14px;font-size:13px;line-height:1.35}
+.hint{font-size:13px;line-height:1.35}
+.orange{color:var(--blue)}
+
+/* Grouped inset cards / lists */
+.card{
+  background:var(--card);
+  border:0;
+  border-radius:var(--radius);
+  padding:12px 16px;
+  margin:10px 0;
+  box-shadow:none;
+}
+.safety{
+  border-left:0;
+  background:var(--safe-bg);
+  border:1px solid rgba(154,103,0,.18);
+}
+.safety b,.safety strong{font-size:15px}
+.hero{
+  font-size:22px;
+  font-weight:700;
+  margin-top:4px;
+  line-height:1.2;
+  letter-spacing:-.02em;
+}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+
+.part,.history,.setting{
+  background:var(--card);
+  padding:13px 16px;
+  border-bottom:0.5px solid var(--line);
+  cursor:pointer;
+  font-size:16px;
+  margin:0;
+}
+.group + .part,
+.group + .history,
+.group + .setting,
+.part:first-child,
+.history:first-child,
+.setting:first-child{
+  border-top-left-radius:var(--radius);
+  border-top-right-radius:var(--radius);
+}
+.part:not(:has(+ .part)),
+.history:not(:has(+ .history)),
+.setting:not(:has(+ .setting)){
+  border-bottom-left-radius:var(--radius);
+  border-bottom-right-radius:var(--radius);
+  border-bottom:0;
+}
+.part + .primary,.part + .actions,.history + .empty,.setting + .primary{margin-top:12px}
+
+.num{
+  display:inline-grid;place-items:center;
+  width:22px;height:22px;border-radius:50%;
+  background:var(--blue);color:#fff;
+  margin-right:10px;font-weight:600;font-size:12px;
+  vertical-align:middle;
+}
+
+.primary,.secondary,.danger-button{
+  width:100%;
+  border:0;
+  border-radius:12px;
+  padding:13px 16px;
+  margin-top:10px;
+  cursor:pointer;
+  font-size:17px;
+  font-weight:600;
+}
+.primary{background:var(--blue);color:#fff}
+.primary:active{opacity:.85}
+.secondary{background:var(--fill2);color:var(--blue);font-weight:600}
+.danger-button{background:var(--danger-bg);color:var(--danger-text);font-weight:600}
+.actions{display:flex;gap:10px}.actions>*{flex:1}
+.small-button{
+  border:0;border-radius:10px;padding:8px 12px;
+  background:var(--fill2);color:var(--blue);cursor:pointer;font-size:14px;font-weight:500;
+}
+
+label{display:block;color:var(--muted);font-size:13px;margin:10px 0 6px;font-weight:400}
+input,select{
+  width:100%;
+  border:0;
+  background:var(--fill2);
+  color:var(--text);
+  border-radius:10px;
+  padding:11px 12px;
+  font-size:16px;
+  outline:none;
+}
+input:focus,select:focus{box-shadow:0 0 0 3px rgba(0,122,255,.22)}
+.pattern{margin-bottom:14px}
+.role{color:var(--blue);font-size:13px;font-weight:500}
+.source{color:var(--muted);font-size:13px;margin:4px 0}
+
+.config-row{overflow:hidden}
+.config-selects{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr);gap:8px}
+.config-selects>div{min-width:0}.config-selects select{min-width:0}
+.config-bottom{display:grid;grid-template-columns:80px minmax(0,1fr);gap:10px;align-items:end}
+.config-source{padding-bottom:6px}
+.add-config,.remove-config{
+  border:0;background:transparent;color:var(--blue);cursor:pointer;font-size:15px;font-weight:500;
+}
+.add-config{width:100%;padding:12px;margin:2px 0}
+.remove-config{width:auto;padding:4px;color:var(--danger-text)}
+
+.form-error{
+  display:none;
+  background:#FFF2F1;
+  border:1px solid rgba(255,59,48,.25);
+  color:#C62828;
+  border-radius:10px;
+  padding:10px 12px;
+  margin-top:8px;
+  font-size:14px;
+}
+.form-error.show{display:block}
+.start-diagnostics{color:var(--muted);font-size:12px;margin:8px 2px}
+.start-diagnostics summary{cursor:pointer;text-align:center}
+.start-diagnostics pre{
+  white-space:pre-wrap;word-break:break-word;
+  background:#fff;border:0.5px solid var(--line);border-radius:10px;
+  padding:10px;font:12px/1.5 var(--font);color:var(--label2);
+}
+.sets-control{display:grid;grid-template-columns:1fr 80px;gap:10px}
+
+.timer{text-align:center;padding:8px 0 4px}
+.clock{
+  font-size:44px;
+  font-weight:300;
+  font-variant-numeric:tabular-nums;
+  line-height:1.05;
+  letter-spacing:-.03em;
+  color:var(--text);
+}
+.timer.done .clock{color:var(--blue);font-weight:500}
+
+.set-grid{
+  display:grid;
+  grid-template-columns:28px 1fr 1fr 72px;
+  gap:6px;align-items:center;
+  padding:8px 0;
+  border-top:0.5px solid var(--line);
+  text-align:center;font-size:14px;
+}
+.set-grid:first-of-type{border-top:0}
+.set-grid input{padding:9px 4px;text-align:center;font-size:16px;background:var(--fill2)}
+.set-grid button{
+  border:0;border-radius:9px;padding:9px 4px;
+  background:var(--fill2);color:var(--blue);font-size:14px;font-weight:600;
+}
+.set-grid button.done{background:var(--blue);color:#fff}
+button:disabled{opacity:.38;cursor:not-allowed}
+
+.previous-performance{color:var(--label2);margin-top:8px;line-height:1.5;font-size:13px}
+.empty-performance{color:var(--muted);margin-top:8px;font-size:13px}
+.history-edit{display:inline-block;width:60px;padding:6px;text-align:center;font-size:14px;color:var(--blue)}
+
+.setting{cursor:default}
+.setting select,.setting input{margin-top:6px}
+
+.group{
+  color:var(--muted);
+  font-size:13px;
+  margin:18px 4px 6px;
+  text-transform:none;
+  font-weight:400;
+  letter-spacing:-.01em;
+}
+.trend{color:var(--label2);font-size:15px;margin:10px 0;font-weight:500}
+.metric-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.empty{text-align:center;color:var(--muted);padding:36px 12px;font-size:15px}
+.record-set{padding:5px 0;color:var(--muted);font-size:14px}
+.record-set.done{color:var(--text)}
+
+/* iOS Tab Bar */
+#tabs{
+  position:absolute;
+  bottom:0;left:0;right:0;
+  width:100%;
+  height:calc(var(--tab-h) + env(safe-area-inset-bottom,0px));
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  background:rgba(249,249,249,.92);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);
+  backdrop-filter:saturate(180%) blur(20px);
+  border-top:0.5px solid var(--sep);
+  display:flex;
+  z-index:9;
+  transform:none;
+}
+#tabs button{
+  flex:1;border:0;background:transparent;color:var(--muted);
+  display:grid;place-items:center;align-content:center;
+  padding:6px 2px 4px;font-size:18px;line-height:1;cursor:pointer;
+}
+#tabs span{display:block;font-size:10px;margin-top:2px;font-weight:500;letter-spacing:-.01em}
+#tabs button.active{color:var(--blue)}
+
+#toast{
+  position:fixed;
+  left:50%;
+  bottom:88px;
+  transform:translateX(-50%) translateY(12px);
+  background:rgba(30,30,30,.88);
+  color:#fff;
+  padding:10px 16px;
+  border-radius:14px;
+  opacity:0;pointer-events:none;transition:.22s;
+  z-index:20;white-space:nowrap;font-size:14px;font-weight:500;
+  max-width:min(90vw,340px);
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media(max-width:430px){
+  .desktop-stage{padding:0}
+  .phone{
+    width:100%;
+    min-height:100vh;
+    border-radius:0;
+    box-shadow:none;
+  }
+  .status-bar{padding-top:max(8px,env(safe-area-inset-top,0px))}
+}
+@media(max-width:360px){
+  .config-selects{grid-template-columns:1fr}
+  .config-bottom{grid-template-columns:74px minmax(0,1fr)}
+  h1{font-size:26px}
+  .clock{font-size:40px}
+}
+</style>
+</head>
+<body>
+  <div class="desktop-stage">
+  <div class="phone">
+  <div class="status-bar" aria-hidden="true"><span>9:41</span><span class="status-icons">● ● ●</span></div>
+  <div class="preview-banner">试用版（浏览器预览，非微信运行）· 记录保存在当前浏览器；若存储被禁止会自动切换为临时试用</div>
+  <main id="app" aria-live="polite">
+    <section class="startup-fallback">
+      <h1>训练助手试用版</h1>
+      <p class="sub">允许脚本时会自动启动交互功能。</p>
+      <div class="card safety">
+        <strong>如果这里一直不变</strong>
+        <p>当前聊天附件查看器可能禁止运行脚本。请先把 HTML 文件下载到手机，再选择 Chrome、Edge、小米浏览器等系统浏览器打开。</p>
+        <p class="hint">禁用脚本时只能查看说明，不能记录训练；应用不会假装已经保存数据。</p>
+      </div>
+      <div class="card">
+        <strong>可试功能</strong>
+        <p>选择训练分化 → 设置部位动作和组数 → 逐组填写重量与次数 → 休息计时 → 查看动作历史。</p>
+      </div>
+    </section>
+  </main>
+  <nav id="tabs">
+    <button data-route="today">⌂<span>今天</span></button>
+    <button data-route="records">▥<span>记录</span></button>
+    <button data-route="settings">⚙<span>设置</span></button>
+  </nav>
+  </div><!-- .phone -->
+  </div><!-- .desktop-stage -->
+  <div id="toast" role="status"></div>
+  <script>
+    window.addEventListener('error', function () {
+      var app = document.getElementById('app')
+      if (!app || !app.querySelector('.startup-fallback')) return
+      var subtitle = app.querySelector('.startup-fallback .sub')
+      if (subtitle) subtitle.textContent = '交互功能未能启动，请下载后改用系统浏览器打开。'
+    })
+  </script>
+  <script>
+(function installBrowserStorage(global) {
+  const PREFIX = 'wechat-preview:'
+  const memory = {}
+  let persistent = true
+
+  function markTemporary(reason) {
+    persistent = false
+    global.__FITNESS_STORAGE_STATUS__ = { persistent: false, reason: reason || 'unavailable' }
+    const banner = global.document && global.document.querySelector('.preview-banner')
+    if (banner) {
+      banner.classList.add('temporary')
+      banner.textContent = '临时试用：当前查看器禁止本地存储，刷新或关闭会丢失记录。建议下载后用系统浏览器打开。'
+    }
+  }
+
+  try {
+    const probe = `${PREFIX}probe`
+    global.localStorage.setItem(probe, '1')
+    global.localStorage.removeItem(probe)
+    global.__FITNESS_STORAGE_STATUS__ = { persistent: true }
+  } catch (error) {
+    markTemporary(error && error.message)
+  }
+
+  global.wx = {
+    getStorageSync(key) {
+      if (!persistent) {
+        const raw = memory[key]
+        return raw === undefined ? undefined : JSON.parse(raw)
+      }
+      try {
+        const raw = global.localStorage.getItem(PREFIX + key)
+        return raw === null ? undefined : JSON.parse(raw)
+      } catch (error) {
+        markTemporary(error && error.message)
+        const raw = memory[key]
+        return raw === undefined ? undefined : JSON.parse(raw)
+      }
+    },
+    setStorageSync(key, value) {
+      const raw = JSON.stringify(value)
+      if (!persistent) {
+        memory[key] = raw
+        return
+      }
+      try {
+        global.localStorage.setItem(PREFIX + key, raw)
+      } catch (error) {
+        memory[key] = raw
+        markTemporary(error && error.message)
+      }
+    },
+    removeStorageSync(key) {
+      delete memory[key]
+      if (!persistent) return
+      try {
+        global.localStorage.removeItem(PREFIX + key)
+      } catch (error) {
+        markTemporary(error && error.message)
+      }
+    }
+  }
+})(window)
+
+</script>
+  <script>
+(function(global) {
+    var modules = {"data/plans.js": function(module, exports, require) {
+const pools = {
+  pulldown: ['引体向上', '高位下拉', '器械下拉'],
+  row: ['杠铃俯身划船', 'T杆俯身划船', '坐姿器械划船', '单边哑铃划船'],
+  straightArm: ['龙门架直臂下压'],
+  rear: ['哑铃俯身飞鸟', '蝴蝶机反向飞鸟', '龙门架反向飞鸟', '坐姿器械/绳索划船（水平开肘）'],
+  biceps: ['哑铃弯举', '杠铃弯举', '集中弯举', '器械弯举', '牧师椅弯举'],
+  chestPush: ['杠铃卧推（水平推）', '哑铃卧推（水平推）', '史密斯卧推（水平推）', '器械推胸（水平推）'],
+  chestFly: ['蝴蝶机夹胸', '龙门架夹胸（水平夹）'],
+  front: ['器械推举', '哑铃推举', '史密斯推举', '哑铃片前平举'],
+  side: ['哑铃侧平举', '龙门架侧平举', '杠铃提拉'],
+  triceps: ['龙门架直杆下压', '龙门架绳索臂屈伸', '哑铃颈后臂屈伸', '杠铃仰卧臂屈伸', '窄距卧推'],
+  quads: ['杠铃深蹲', '器械腿屈伸'],
+  hamstrings: ['罗马尼亚硬拉', '传统硬拉', '器械腿弯举'],
+  legAssist: ['哈克机', '倒蹬机', '箭步蹲', '史密斯深蹲'],
+  abs: ['平板卷腹', '悬垂举腿'],
+  homeBack: ['引体向上（可用弹力带减重）', '弹力带俯身划船', '单边哑铃划船'],
+  homeRear: ['哑铃俯身飞鸟', '弹力带反向飞鸟', '弹力带划船（水平开肘）'],
+  homeBiceps: ['哑铃弯举', '弹力带弯举', '集中弯举'],
+  homePush: ['俯卧撑', '哑铃卧推'],
+  homeFly: ['弹力带夹胸（水平夹）'],
+  homeFront: ['哑铃推举', '弹力带推举', '哑铃前平举', '弹力带前平举'],
+  homeSide: ['哑铃侧平举', '弹力带侧平举', '哑铃提拉', '弹力带提拉'],
+  homeTriceps: ['哑铃颈后臂屈伸', '弹力带颈后臂屈伸', '哑铃仰卧臂屈伸', '窄距俯卧撑'],
+  homeQuads: ['哑铃箭步蹲', '高脚杯深蹲'],
+  homeHamstrings: ['哑铃硬拉', '弹力带硬拉'],
+  homeGlutes: ['弹力带臀桥', '弹力带髋外展']
+}
+
+function p(id, name, pool, role, total, sets, restType) {
+  return { id, name, options: pools[pool], role, sourceTotal: total, suggestedSets: sets, restType }
+}
+
+const back = () => [
+  p('pulldown', '下拉', 'pulldown', '主项', '类别合计 6–8 组', 3, 'compound'),
+  p('row', '水平划船', 'row', '主项', '类别合计 6–8 组', 3, 'compound'),
+  p('straight-arm', '直臂下压', 'straightArm', '可选补充（不等价于划船）', '原表列于划船类', 2, 'isolation')
+]
+const rear = () => p('rear', '肩后束', 'rear', '协同肌补练', '类别合计 6–8 组', 3, 'isolation')
+const biceps = () => p('biceps', '肱二头', 'biceps', '协同肌补练', '类别合计 6–8 组', 3, 'isolation')
+const chest = () => [
+  p('chest-push', '中胸 · 水平推', 'chestPush', '主项', '中胸类别合计 10–12 组', 3, 'compound'),
+  p('chest-fly', '中胸 · 水平夹', 'chestFly', '主项', '与水平推共享类别总组数', 3, 'isolation')
+]
+const front = () => p('front', '肩前束', 'front', '协同肌补练', '类别合计按所选循环', 3, 'compound')
+const side = () => p('side', '肩中束', 'side', '协同肌补练', '类别合计按所选循环', 3, 'isolation')
+const triceps = () => p('triceps', '肱三头', 'triceps', '协同肌补练', '类别合计按所选循环', 3, 'isolation')
+const legs = hasAbs => [
+  p('leg-focus', '今日腿部重点', 'quads', '主项', '类别合计 6–8 组', 3, 'leg'),
+  p('leg-assist', '兼练动作', 'legAssist', '主项', '类别合计 6–8 组', 3, 'leg')
+].concat(hasAbs ? [p('abs', '腹', 'abs', '补练', '类别合计 6–8 组', 3, 'isolation')] : [])
+
+const templates = {
+  gym3: {
+    id: 'gym3', name: '健身房三分化', gymLegRotation: true,
+    slots: [
+      { id: 'day1', title: '背 · 肩后束 · 二头', parts: [{ name: '背部', patterns: back() }, { name: '肩后束', patterns: [rear()] }, { name: '二头', patterns: [biceps()] }] },
+      { id: 'day2', title: '胸 · 肩前中束 · 三头', parts: [{ name: '胸部', patterns: chest() }, { name: '肩前中束', patterns: [front(), side()] }, { name: '三头', patterns: [triceps()] }] },
+      { id: 'day3', title: '腿臀 · 腹', isLeg: true, parts: [{ name: '腿部重点', patterns: legs(true).slice(0, 2) }, { name: '腹', patterns: legs(true).slice(2) }] }
+    ]
+  },
+  gym4shoulder: {
+    id: 'gym4shoulder', name: '四分化 · 肩单练', gymLegRotation: true,
+    slots: [
+      { id: 'day1', title: '背 · 二头', parts: [{ name: '背部', patterns: back() }, { name: '二头', patterns: [biceps()] }] },
+      { id: 'day2', title: '胸 · 三头', parts: [{ name: '胸部', patterns: chest() }, { name: '三头', patterns: [triceps()] }] },
+      { id: 'day3', title: '腿臀 · 腹', isLeg: true, parts: [{ name: '腿部重点', patterns: legs(true).slice(0, 2) }, { name: '腹', patterns: legs(true).slice(2) }] },
+      { id: 'day4', title: '肩', parts: [{ name: '肩前束', patterns: [front()] }, { name: '肩中束', patterns: [side()] }, { name: '肩后束', patterns: [rear()] }] }
+    ]
+  },
+  gym4arms: {
+    id: 'gym4arms', name: '四分化 · 手臂单练', gymLegRotation: true,
+    slots: [
+      { id: 'day1', title: '背 · 肩后束', parts: [{ name: '背部', patterns: back() }, { name: '肩后束', patterns: [rear()] }] },
+      { id: 'day2', title: '胸 · 肩前中束', parts: [{ name: '胸部', patterns: chest() }, { name: '肩前中束', patterns: [front(), side()] }] },
+      { id: 'day3', title: '腿臀', isLeg: true, parts: [{ name: '腿部重点', patterns: legs(false) }] },
+      { id: 'day4', title: '大臂 · 腹', parts: [{ name: '二头', patterns: [biceps()] }, { name: '三头', patterns: [triceps()] }, { name: '腹', patterns: [p('abs', '腹', 'abs', '补练', '类别合计 6–8 组', 3, 'isolation')] }] }
+    ]
+  },
+  home3: {
+    id: 'home3', name: '居家三分化', gymLegRotation: false,
+    slots: [
+      { id: 'day1', title: '背 · 肩后束 · 二头', parts: [{ name: '背部', patterns: [p('home-back', '背', 'homeBack', '主项', '类别合计 6–8 组', 3, 'compound')] }, { name: '肩后束', patterns: [p('home-rear', '肩后束', 'homeRear', '补练', '类别合计 6–8 组', 3, 'isolation')] }, { name: '二头', patterns: [p('home-bi', '二头', 'homeBiceps', '补练', '类别合计 6–8 组', 3, 'isolation')] }] },
+      { id: 'day2', title: '胸 · 肩前中束 · 三头', parts: [{ name: '胸部', patterns: [p('home-push', '水平推', 'homePush', '主项', '中胸类别合计 10 组', 3, 'compound'), p('home-fly', '水平夹', 'homeFly', '主项', '与水平推共享类别总组数', 3, 'isolation')] }, { name: '肩前中束', patterns: [p('home-front', '肩前束', 'homeFront', '补练', '类别合计 5 组', 3, 'compound'), p('home-side', '肩中束', 'homeSide', '补练', '类别合计 5 组', 3, 'isolation')] }, { name: '三头', patterns: [p('home-tri', '三头', 'homeTriceps', '补练', '类别合计 5 组', 3, 'isolation')] }] },
+      { id: 'day3', title: '腿臀 · 腹', isLeg: true, parts: [{ name: '腿部', patterns: [p('home-quad', '股四头', 'homeQuads', '主项', '类别合计 6–8 组', 3, 'leg'), p('home-ham', '腘绳肌', 'homeHamstrings', '主项', '类别合计 6–8 组', 3, 'leg'), p('home-glute', '臀大肌', 'homeGlutes', '可选', '类别合计 6–8 组', 3, 'compound')] }, { name: '腹', patterns: [p('abs', '腹', 'abs', '补练', '类别合计 6–8 组', 3, 'isolation')] }] }
+    ]
+  }
+}
+
+function applyLegFocus(template, slot, legFocus) {
+  const copy = JSON.parse(JSON.stringify(slot))
+  if (!copy.isLeg || !template.gymLegRotation) return copy
+  const pattern = copy.parts[0].patterns[0]
+  pattern.options = pools[legFocus === 'hamstrings' ? 'hamstrings' : 'quads']
+  pattern.name = legFocus === 'hamstrings' ? '腘绳肌重点' : '股四头重点'
+  return copy
+}
+
+module.exports = { templates, pools, applyLegFocus }
+
+},
+"utils/engine.js": function(module, exports, require) {
+const plans = require('../data/plans')
+
+function todayKey(now) {
+  const d = now ? new Date(now) : new Date()
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
+}
+
+function initialState() {
+  return {
+    version: 2,
+    settings: {
+      displayName: '太岁',
+      templateId: 'gym3',
+      templateConfirmed: false,
+      timePeriod: '下午',
+      mealRelation: '产品映射：接近午饭后或晚饭前，请按实际安排',
+      bpUnconfirmed: true,
+      rests: { compound: 120, isolation: 60, leg: 180 },
+      favorites: {}
+    },
+    rotation: { slotIndex: 0, legFocus: 'quads', scheduledDate: null },
+    activeSession: null,
+    history: [],
+    metrics: [],
+    routines: {},
+    completedSessionIds: []
+  }
+}
+
+function getCurrentSlot(state) {
+  const template = plans.templates[state.settings.templateId] || plans.templates.gym3
+  return plans.applyLegFocus(template, template.slots[state.rotation.slotIndex], state.rotation.legFocus)
+}
+
+function advance(state, mode, now) {
+  const next = JSON.parse(JSON.stringify(state))
+  const template = plans.templates[next.settings.templateId]
+  const slot = template.slots[next.rotation.slotIndex]
+  if (mode === 'rest') return next
+  if (mode !== 'complete' && mode !== 'skip') throw new Error('invalid advance mode')
+  next.rotation.slotIndex = (next.rotation.slotIndex + 1) % template.slots.length
+  next.rotation.scheduledDate = null
+  if (mode === 'complete' && slot.isLeg && template.gymLegRotation) {
+    next.rotation.legFocus = next.rotation.legFocus === 'quads' ? 'hamstrings' : 'quads'
+  }
+  if (mode === 'skip') {
+    next.history.unshift({ id: `skip-${now || Date.now()}`, date: todayKey(now), status: 'skipped', title: slot.title, templateName: template.name })
+  }
+  return next
+}
+
+function createSession(state, selected, now) {
+  const slot = getCurrentSlot(state)
+  const parts = slot.parts.map(part => ({
+    name: part.name,
+    exercises: part.patterns.filter(pattern => selected[pattern.id]).map(pattern => {
+      const choice = selected[pattern.id]
+      const count = Math.max(1, Math.min(8, Number(choice.sets) || pattern.suggestedSets))
+      return {
+        patternId: pattern.id, patternName: pattern.name, name: choice.name,
+        role: pattern.role, sourceTotal: pattern.sourceTotal, restType: pattern.restType,
+        unit: choice.unit || 'kg',
+        sets: Array.from({ length: count }, (_, i) => ({ index: i + 1, weight: '', reps: '', unit: choice.unit || 'kg', done: false }))
+      }
+    })
+  })).filter(part => part.exercises.length)
+  return {
+    id: `s-${now || Date.now()}`, date: state.rotation.scheduledDate || todayKey(now), templateId: state.settings.templateId,
+    slotId: slot.id, title: slot.title, parts, partIndex: 0, startedAt: now || Date.now(),
+    updatedAt: now || Date.now(), rest: null, completed: false, actionLock: null,
+    exerciseIndex: 0
+  }
+}
+
+function updateActiveSet(session, partIndex, exerciseIndex, setIndex, values, now) {
+  const copy = JSON.parse(JSON.stringify(session))
+  const set = copy.parts[partIndex].exercises[exerciseIndex].sets[setIndex]
+  if (!set || set.done) return copy
+  if (Object.prototype.hasOwnProperty.call(values, 'weight')) set.weight = String(values.weight || '')
+  if (Object.prototype.hasOwnProperty.call(values, 'reps')) set.reps = String(values.reps || '')
+  if (values.unit) set.unit = values.unit
+  copy.updatedAt = now || Date.now()
+  return copy
+}
+
+function completeSet(session, partIndex, exerciseIndex, setIndex, values, now) {
+  const copy = JSON.parse(JSON.stringify(session))
+  const set = copy.parts[partIndex].exercises[exerciseIndex].sets[setIndex]
+  const token = `${partIndex}-${exerciseIndex}-${setIndex}`
+  if (set.done || copy.actionLock === token) return { session: copy, changed: false }
+  copy.actionLock = token
+  set.weight = values.weight || ''
+  set.reps = values.reps || ''
+  set.done = true
+  set.completedAt = now || Date.now()
+  const exercise = copy.parts[partIndex].exercises[exerciseIndex]
+  const seconds = Number(values.restSeconds) || 60
+  copy.rest = {
+    startedAt: now || Date.now(),
+    endsAt: (now || Date.now()) + seconds * 1000,
+    durationSeconds: seconds,
+    semantics: '修改最低休息时长时，从本组完成时间重新计算结束点；延长则在当前结束点上增加。'
+  }
+  copy.updatedAt = now || Date.now()
+  copy.actionLock = null
+  return { session: copy, changed: true, exercise }
+}
+
+function restRemaining(rest, now) {
+  if (!rest) return 0
+  return Math.max(0, Math.ceil((rest.endsAt - (now || Date.now())) / 1000))
+}
+
+function adjustRest(session, seconds, now) {
+  const copy = JSON.parse(JSON.stringify(session))
+  if (!copy.rest) return copy
+  copy.rest.durationSeconds = seconds
+  copy.rest.endsAt = copy.rest.startedAt + seconds * 1000
+  copy.updatedAt = now || Date.now()
+  return copy
+}
+
+function extendRest(session, seconds, now) {
+  const copy = JSON.parse(JSON.stringify(session))
+  if (!copy.rest) return copy
+  copy.rest.endsAt += seconds * 1000
+  copy.rest.durationSeconds += seconds
+  copy.updatedAt = now || Date.now()
+  return copy
+}
+
+function finishSession(state, status, now) {
+  const next = JSON.parse(JSON.stringify(state))
+  if (!next.activeSession) return next
+  const session = next.activeSession
+  next.completedSessionIds = next.completedSessionIds || []
+  if (status === 'completed' && next.completedSessionIds.includes(session.id)) {
+    next.activeSession = null
+    return next
+  }
+  session.endedAt = now || Date.now()
+  session.status = status
+  session.completed = status === 'completed'
+  next.history.unshift(session)
+  next.activeSession = null
+  if (status !== 'completed') return next
+  next.completedSessionIds.push(session.id)
+  return advance(next, 'complete', now)
+}
+
+function changeTemplate(state, templateId) {
+  if (state.activeSession) throw new Error('ACTIVE_SESSION')
+  if (!plans.templates[templateId]) throw new Error('UNKNOWN_TEMPLATE')
+  const next = JSON.parse(JSON.stringify(state))
+  next.settings.templateId = templateId
+  next.settings.templateConfirmed = true
+  next.rotation.slotIndex = 0
+  next.rotation.legFocus = 'quads'
+  return next
+}
+
+function routineKey(templateId, slotId, partIndex) {
+  return `${templateId}:${slotId}:${partIndex}`
+}
+
+function saveRoutine(state, slotId, partIndex, choices) {
+  const next = JSON.parse(JSON.stringify(state))
+  next.routines = next.routines || {}
+  next.routines[routineKey(next.settings.templateId, slotId, partIndex)] = JSON.parse(JSON.stringify(choices))
+  return next
+}
+
+function getRoutine(state, slotId, partIndex) {
+  return (state.routines || {})[routineKey(state.settings.templateId, slotId, partIndex)] || null
+}
+
+function getLastPerformance(state, exerciseName, unit) {
+  const expectedUnit = unit || 'kg'
+  for (const session of state.history || []) {
+    for (const part of session.parts || []) {
+      for (const exercise of part.exercises || []) {
+        if (exercise.name !== exerciseName) continue
+        const actualSets = (exercise.sets || []).filter(set => set.done && (set.unit || exercise.unit || 'kg') === expectedUnit)
+        if (actualSets.length) {
+          return {
+            sessionId: session.id,
+            date: session.date,
+            unit: expectedUnit,
+            sets: actualSets.map(set => ({ weight: set.weight, reps: set.reps, unit: set.unit || exercise.unit || 'kg' }))
+          }
+        }
+      }
+    }
+  }
+  return null
+}
+
+function editHistorySet(state, sessionId, partIndex, exerciseIndex, setIndex, values, now) {
+  const next = JSON.parse(JSON.stringify(state))
+  const session = next.history.find(item => item.id === sessionId)
+  if (!session) throw new Error('HISTORY_NOT_FOUND')
+  const exercise = session.parts[partIndex].exercises[exerciseIndex]
+  const set = exercise.sets[setIndex]
+  if (!set) throw new Error('SET_NOT_FOUND')
+  if (Object.prototype.hasOwnProperty.call(values, 'weight')) set.weight = String(values.weight || '')
+  if (Object.prototype.hasOwnProperty.call(values, 'reps')) set.reps = String(values.reps || '')
+  set.unit = values.unit || set.unit || exercise.unit || 'kg'
+  set.editedAt = now || Date.now()
+  session.editedAt = set.editedAt
+  return next
+}
+
+function listExerciseHistory(state, exerciseName, unit) {
+  const expectedUnit = unit || 'kg'
+  const rows = []
+  for (const session of state.history || []) {
+    for (const part of session.parts || []) {
+      for (const exercise of part.exercises || []) {
+        if (exercise.name !== exerciseName) continue
+        const sets = (exercise.sets || []).filter(set => set.done && (set.unit || exercise.unit || 'kg') === expectedUnit)
+        if (sets.length) rows.push({ sessionId: session.id, date: session.date, unit: expectedUnit, sets })
+      }
+    }
+  }
+  return rows
+}
+
+function exerciseSummaries(state) {
+  const names = []
+  for (const session of state.history || []) {
+    for (const part of session.parts || []) {
+      for (const exercise of part.exercises || []) {
+        if ((exercise.sets || []).some(set => set.done) && !names.includes(exercise.name)) names.push(exercise.name)
+      }
+    }
+  }
+  return names.map(name => {
+    const history = listExerciseHistory(state, name, 'kg')
+    return { name, count: history.length, last: history[0] || null, unit: 'kg' }
+  })
+}
+
+function reschedule(state, date) {
+  const next = JSON.parse(JSON.stringify(state))
+  next.rotation.scheduledDate = date
+  if (next.activeSession) next.activeSession.date = date
+  return next
+}
+
+module.exports = {
+  todayKey, initialState, getCurrentSlot, advance, createSession, completeSet,
+  updateActiveSet, restRemaining, adjustRest, extendRest, finishSession, changeTemplate, reschedule,
+  routineKey, saveRoutine, getRoutine, getLastPerformance, editHistorySet,
+  listExerciseHistory, exerciseSummaries
+}
+
+},
+"utils/store.js": function(module, exports, require) {
+const engine = require('./engine')
+const KEY = 'fitness_coach_v1'
+let memory = null
+
+function hash(text) {
+  let value = 2166136261
+  for (let i = 0; i < text.length; i += 1) {
+    value ^= text.charCodeAt(i)
+    value = Math.imul(value, 16777619)
+  }
+  return (value >>> 0).toString(16)
+}
+
+function api() {
+  if (typeof wx !== 'undefined') return wx
+  return {
+    getStorageSync: () => memory,
+    setStorageSync: (_, value) => { memory = value }
+  }
+}
+
+function pack(state) {
+  const payload = JSON.stringify(state)
+  return { schemaVersion: 2, payload, checksum: hash(payload), savedAt: Date.now() }
+}
+
+function save(state) {
+  api().setStorageSync(KEY, pack(state))
+  return state
+}
+
+function load() {
+  const envelope = api().getStorageSync(KEY)
+  if (!envelope || !envelope.payload || hash(envelope.payload) !== envelope.checksum) {
+    return engine.initialState()
+  }
+  try {
+    const state = JSON.parse(envelope.payload)
+    return migrate(state)
+  } catch (error) {
+    return engine.initialState()
+  }
+}
+
+function migrate(state) {
+  if (!state || (state.version !== 1 && state.version !== 2)) return engine.initialState()
+  if (state.version === 1) {
+    state.version = 2
+    state.settings.templateConfirmed = Boolean(
+      state.activeSession || (state.history && state.history.length) ||
+      (state.settings.favorites && Object.keys(state.settings.favorites).length)
+    )
+  }
+  if (typeof state.settings.templateConfirmed !== 'boolean') state.settings.templateConfirmed = false
+  state.routines = state.routines || {}
+  state.completedSessionIds = state.completedSessionIds || []
+  return state
+}
+
+function bootstrap() {
+  const envelope = api().getStorageSync(KEY)
+  if (!envelope) save(engine.initialState())
+  else if (!envelope.payload || hash(envelope.payload) !== envelope.checksum) {
+    api().setStorageSync(`${KEY}_corrupt_${Date.now()}`, envelope)
+    save(engine.initialState())
+  } else {
+    const state = load()
+    if (state.version === 2 && envelope.schemaVersion !== 2) save(state)
+  }
+}
+
+function resetMemory() { memory = null }
+
+module.exports = { KEY, hash, pack, save, load, bootstrap, migrate, resetMemory }
+
+}};
+    var cache = {};
+    function normalize(from, request) {
+      if (request[0] !== '.') return request;
+      var base = from.split('/'); base.pop();
+      request.split('/').forEach(function(part) {
+        if (part === '..') base.pop();
+        else if (part !== '.') base.push(part);
+      });
+      var id = base.join('/');
+      return id.endsWith('.js') ? id : id + '.js';
+    }
+    function load(id) {
+      if (cache[id]) return cache[id].exports;
+      if (!modules[id]) throw new Error('Unknown shared module: ' + id);
+      var module = { exports: {} }; cache[id] = module;
+      modules[id](module, module.exports, function(request) { return load(normalize(id, request)); });
+      return module.exports;
+    }
+    global.FitnessCore = {
+      plans: load('data/plans.js'),
+      engine: load('utils/engine.js'),
+      store: load('utils/store.js')
+    };
+  })(window);
+</script>
+  <script>
+(function previewApp() {
+  const { engine, plans, store } = window.FitnessCore
+  const app = document.querySelector('#app')
+  const tabs = document.querySelector('#tabs')
+  let route = 'today'
+  let routeData = {}
+  let toastTimer
+
+  store.bootstrap()
+
+  const esc = value => String(value == null ? '' : value).replace(/[&<>"']/g, char => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  })[char])
+
+  function toast(message) {
+    const node = document.querySelector('#toast')
+    node.textContent = message
+    node.classList.add('show')
+    clearTimeout(toastTimer)
+    toastTimer = setTimeout(() => node.classList.remove('show'), 1800)
+  }
+
+  function navigate(next, data) {
+    route = next
+    routeData = data || {}
+    render()
+    window.scrollTo(0, 0)
+  }
+
+  function safety(state) {
+    return state.settings.bpUnconfirmed ? `
+      <section class="card safety"><b>血压仍未确认 · 保守训练</b>
+      <div class="hint">不憋气、不做极限/力竭/HIIT/1RM。胸痛、明显气促或晕厥时停止并及时就医。</div></section>` : ''
+  }
+
+  function renderToday() {
+    const state = store.load()
+    const template = plans.templates[state.settings.templateId]
+    const slot = engine.getCurrentSlot(state)
+    if (!state.settings.templateConfirmed) {
+      app.innerHTML = `<h1>开始记录训练</h1><div class="sub">首次选一次分化，之后可在设置修改。</div>
+        <section class="card"><h2>选择训练分化</h2>
+          <label>分化方案</label><select id="first-template">${Object.values(plans.templates).map(item => `<option value="${item.id}">${esc(item.name)}</option>`).join('')}</select>
+          <button class="primary" data-action="confirm-first-template">确认并开始</button>
+        </section>`
+      return
+    }
+    app.innerHTML = `
+      <h1>今天练什么</h1><div class="sub">${esc(state.rotation.scheduledDate || engine.todayKey())} · ${esc(template.name)}</div>
+      ${safety(state)}
+      <section class="card"><span class="muted">当前槽位</span><div class="hero">${esc(slot.title)}</div>
+      ${slot.isLeg && template.gymLegRotation ? `<div class="hint">本次重点：${state.rotation.legFocus === 'quads' ? '股四头 + 兼练' : '腘绳肌 + 兼练'}</div>` : ''}</section>
+      <div class="group">按顺序完成部位</div>
+      ${slot.parts.map((part, index) => {
+        const configured = engine.getRoutine(state, slot.id, index)
+        return `<div class="part row" data-action="${configured ? 'start-routine' : 'category'}" data-index="${index}">
+        <span><i class="num">${index + 1}</i>${esc(part.name)}</span><span class="${index ? 'muted' : 'orange'}">${index ? '待开始' : '当前'} ›</span>
+      </div>`}).join('')}
+      <button class="primary" data-action="${state.activeSession ? 'resume' : (engine.getRoutine(state, slot.id, 0) ? 'start-routine' : 'category')}" data-index="0">${state.activeSession ? '恢复进行中的训练' : '开始当前部位'}</button>
+      <div class="actions"><button class="secondary" data-action="rest">今天休息</button><button class="secondary" data-action="skip">跳过槽位</button></div>
+      <div class="hint" style="text-align:center;margin-top:6px">休息不推进 · 确认完成后才推进</div>`
+  }
+
+  function renderCategory() {
+    const state = store.load()
+    const slot = engine.getCurrentSlot(state)
+    const index = Number(routeData.index || 0)
+    const part = slot.parts[index]
+    if (!part) return navigate('today')
+    const routine = engine.getRoutine(state, slot.id, index) || {}
+    if (!routeData.rows) {
+      routeData.rows = part.patterns
+        .filter(pattern => routine[pattern.id])
+        .map(pattern => ({
+          patternId: pattern.id,
+          name: routine[pattern.id].name,
+          sets: routine[pattern.id].sets
+        }))
+      if (!routeData.rows.length) routeData.rows = [{ patternId: '', name: '', sets: 3 }]
+    }
+    app.innerHTML = `<h1>${esc(part.name)}</h1><div class="sub">默认一个动作，需要再添加</div>
+      <form id="category-form" data-index="${index}">
+      ${routeData.rows.map((row, rowIndex) => {
+        const selectedPattern = part.patterns.find(pattern => pattern.id === row.patternId)
+        return `<section class="card config-row" data-row="${rowIndex}">
+          <div class="row"><h2>动作 ${rowIndex + 1}</h2>${routeData.rows.length > 1 ? `<button class="remove-config" type="button" data-action="remove-config" data-index="${rowIndex}">删除</button>` : ''}</div>
+          <div class="config-selects">
+            <div><label>动作类型</label><select class="config-type">
+              <option value="">请选择类型</option>
+              ${part.patterns.map(pattern => `<option value="${esc(pattern.id)}" ${pattern.id === row.patternId ? 'selected' : ''}>${esc(pattern.name)}</option>`).join('')}
+            </select></div>
+            <div><label>器械 / 具体动作</label><select class="config-exercise" ${selectedPattern ? '' : 'disabled'}>
+              <option value="">${selectedPattern ? '请选择具体动作' : '先选动作类型'}</option>
+              ${selectedPattern ? selectedPattern.options.map(name => `<option value="${esc(name)}" ${name === row.name ? 'selected' : ''}>${esc(name)}</option>`).join('') : ''}
+            </select></div>
+          </div>
+          <div class="config-bottom"><div><label>本次组数</label><input class="config-sets" type="number" min="1" max="8" value="${esc(row.sets || (selectedPattern && selectedPattern.suggestedSets) || 3)}"></div>
+          <div class="source config-source">${selectedPattern ? `${esc(selectedPattern.role)} · ${esc(selectedPattern.sourceTotal)}` : '选择类型后显示原表类别说明'}</div></div>
+          ${row.patternId === 'straight-arm' ? '<div class="hint">直臂下压是可选补充，不替代水平划船。</div>' : ''}
+        </section>`
+      }).join('')}
+      <button class="add-config" type="button" data-action="add-config">＋ 添加另一个动作（可选）</button>
+      <div id="category-error" class="form-error" role="alert"></div>
+      <button class="primary" type="button" data-action="start-training">开始训练</button>
+      <details class="start-diagnostics"><summary>点了没反应？查看诊断</summary><pre id="start-diagnostic">等待点击开始训练</pre></details>
+      </form>`
+  }
+
+  function readConfigRows() {
+    return [...document.querySelectorAll('.config-row')].map(row => ({
+      patternId: row.querySelector('.config-type').value,
+      name: row.querySelector('.config-exercise').value,
+      sets: Number(row.querySelector('.config-sets').value) || 3
+    }))
+  }
+
+  function startPart(form) {
+    const error = form.querySelector('#category-error')
+    const diagnostic = form.querySelector('#start-diagnostic')
+    const mark = (stage, cause) => {
+      if (!diagnostic) return
+      const storage = window.__FITNESS_STORAGE_STATUS__
+      diagnostic.textContent = [
+        `阶段：${stage}`,
+        `存储：${storage && storage.persistent === false ? '临时模式' : '可持久保存'}`,
+        `页面来源：${location.protocol || '未知'}`,
+        cause ? `异常：${cause.message || String(cause)}` : ''
+      ].filter(Boolean).join('\n')
+    }
+    const showError = (message, field) => {
+      error.textContent = message
+      error.classList.add('show')
+      if (field) field.focus()
+      try { error.scrollIntoView({ block: 'center', behavior: 'smooth' }) } catch (cause) { error.scrollIntoView() }
+    }
+    error.textContent = ''
+    error.classList.remove('show')
+    mark('已收到按钮点击')
+    try {
+      let state = store.load()
+      const slot = engine.getCurrentSlot(state)
+      const partIndex = Number(form.dataset.index)
+      const part = slot.parts[partIndex]
+      const choices = {}
+      const rows = Array.prototype.slice.call(form.querySelectorAll('.config-row'))
+      mark('正在校验动作')
+      for (let index = 0; index < rows.length; index += 1) {
+        const type = rows[index].querySelector('.config-type')
+        const exercise = rows[index].querySelector('.config-exercise')
+        const sets = rows[index].querySelector('.config-sets')
+        if (!type.value) return showError(`动作 ${index + 1}：请先选择动作类型`, type)
+        if (!exercise.value) return showError(`动作 ${index + 1}：请选择器械或具体动作`, exercise)
+        const count = Number(sets.value)
+        if (!Number.isInteger(count) || count < 1 || count > 8) return showError(`动作 ${index + 1}：组数请输入 1–8 的整数`, sets)
+        if (choices[type.value]) return showError(`动作 ${index + 1}：同一动作类型请勿重复添加`, type)
+        choices[type.value] = { name: exercise.value, sets: count }
+        state.settings.favorites[`${state.settings.templateId}:${type.value}`] = exercise.value
+      }
+      mark('正在建立训练')
+      state = engine.saveRoutine(state, slot.id, partIndex, choices)
+      const built = engine.createSession(state, choices)
+      const selectedPart = built.parts.find(item => item.name === part.name)
+      if (!selectedPart || !selectedPart.exercises.length) return showError('没有可开始的动作，请检查上方选择')
+      if (!state.activeSession) {
+        built.parts = [selectedPart]
+        built.currentPlanPartIndex = partIndex
+        state.activeSession = built
+      } else {
+        const existingIndex = state.activeSession.parts.findIndex(item => item.name === selectedPart.name)
+        if (existingIndex < 0) {
+          state.activeSession.parts.push(selectedPart)
+          state.activeSession.partIndex = state.activeSession.parts.length - 1
+        } else {
+          const existing = state.activeSession.parts[existingIndex]
+          selectedPart.exercises.forEach(exercise => {
+            const prior = existing.exercises.find(item => item.name === exercise.name)
+            if (!prior) return
+            exercise.sets.forEach((set, index) => { if (prior.sets[index]) exercise.sets[index] = prior.sets[index] })
+          })
+          state.activeSession.parts[existingIndex] = selectedPart
+          state.activeSession.partIndex = existingIndex
+        }
+        state.activeSession.exerciseIndex = 0
+        state.activeSession.currentPlanPartIndex = partIndex
+      }
+      mark('正在保存并打开训练页')
+      store.save(state)
+      navigate('workout')
+    } catch (cause) {
+      console.error(cause)
+      mark('启动失败', cause)
+      showError(`无法开始训练：${cause && cause.message ? cause.message : '请检查选择后重试'}`)
+    }
+  }
+
+  function startRoutine(partIndex) {
+    const state = store.load()
+    const slot = engine.getCurrentSlot(state)
+    const routine = engine.getRoutine(state, slot.id, partIndex)
+    if (!routine) return navigate('category', { index: partIndex })
+    const built = engine.createSession(state, routine)
+    const selectedPart = built.parts.find(item => item.name === slot.parts[partIndex].name)
+    built.parts = [selectedPart]
+    built.currentPlanPartIndex = partIndex
+    state.activeSession = built
+    store.save(state)
+    navigate('workout')
+  }
+
+  function renderWorkout() {
+    const state = store.load()
+    const session = state.activeSession
+    if (!session) return navigate('today')
+    const part = session.parts[session.partIndex]
+    const exerciseIndex = session.exerciseIndex || 0
+    const exercise = part.exercises[exerciseIndex]
+    const last = engine.getLastPerformance(state, exercise.name, exercise.unit || 'kg')
+    const remaining = engine.restRemaining(session.rest)
+    app.innerHTML = `<div class="muted">${esc(session.title)} · ${esc(part.name)} · 动作 ${exerciseIndex + 1}/${part.exercises.length}</div>
+      <div class="row"><h1>${esc(exercise.name)}</h1><button class="small-button" data-action="edit-part">编辑动作</button></div>
+      <div class="sub">${esc(exercise.patternName)} · 每组留 2–3 次余力，不憋气</div>
+      <section class="card"><div class="muted">上次同动作</div>
+        ${last ? `<div class="source">${esc(last.date)} · 单位 ${esc(last.unit)}</div><div class="previous-performance">${last.sets.map(set => `${esc(set.weight || '—')} kg × ${esc(set.reps || '—')}`).join('　')}</div>` : '<div class="empty-performance">暂无真实记录，完成训练后这里会显示。</div>'}
+      </section>
+      ${session.rest ? `<section class="card timer ${remaining ? '' : 'done'}"><div class="muted">最低休息</div>
+        <div class="clock" id="clock">${clock(remaining)}</div><div class="hint" id="rest-hint">${remaining ? '计时期间下一组不可完成' : '最低休息已到，由你决定何时继续'}</div>
+        <div class="actions"><select id="rest-adjust"><option value="">调整时长</option>${[60,90,120,180,240].map(n => `<option value="${n}">${n} 秒</option>`).join('')}</select>
+        <button class="small-button" data-action="extend">延长 30 秒</button></div></section>` : ''}
+      <section class="card"><div class="row"><h2>本次记录</h2><span class="role">${esc(exercise.role)}</span></div>
+        <div class="source">${esc(exercise.sourceTotal)}；输入立即自动保存</div>
+        <div class="set-grid muted"><span>组</span><span>重量 kg</span><span>次数</span><span>完成</span></div>
+        ${exercise.sets.map((set, setIndex) => `<div class="set-grid" data-exercise="${exerciseIndex}" data-set="${setIndex}">
+          <span>${set.index}</span><input class="weight" data-field="weight" type="number" step="0.5" value="${esc(set.weight)}" ${set.done ? 'disabled' : ''} placeholder="—">
+          <input class="reps" data-field="reps" type="number" value="${esc(set.reps)}" ${set.done ? 'disabled' : ''} placeholder="—">
+          <button class="${set.done ? 'done' : ''}" data-action="complete-set" ${set.done || remaining ? 'disabled' : ''}>${set.done ? '✓' : '完成'}</button></div>`).join('')}
+      </section>
+      <div class="actions">${exerciseIndex > 0 ? '<button class="secondary" data-action="previous-exercise">上一个动作</button>' : ''}
+      <button class="primary" data-action="next-exercise">${exerciseIndex < part.exercises.length - 1 ? '下一个动作' : '完成本部位'}</button></div>
+      <button class="secondary" data-action="partial">保存并结束（允许部分完成）</button>`
+  }
+
+  function completeSet(button) {
+    const row = button.closest('.set-grid')
+    const state = store.load()
+    if (engine.restRemaining(state.activeSession.rest) > 0) return
+    const exerciseIndex = Number(row.dataset.exercise)
+    const setIndex = Number(row.dataset.set)
+    const exercise = state.activeSession.parts[state.activeSession.partIndex].exercises[exerciseIndex]
+    const result = engine.completeSet(state.activeSession, state.activeSession.partIndex, exerciseIndex, setIndex, {
+      weight: row.querySelector('.weight').value,
+      reps: row.querySelector('.reps').value,
+      restSeconds: state.settings.rests[exercise.restType] || 60
+    })
+    if (result.changed) {
+      state.activeSession = result.session
+      store.save(state)
+      renderWorkout()
+    }
+  }
+
+  function clock(seconds) {
+    return `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`
+  }
+
+  function tick() {
+    if (route !== 'workout') return
+    const state = store.load()
+    if (!state.activeSession || !state.activeSession.rest) return
+    const remaining = engine.restRemaining(state.activeSession.rest)
+    const node = document.querySelector('#clock')
+    if (node) node.textContent = clock(remaining)
+    const hint = document.querySelector('#rest-hint')
+    if (hint) hint.textContent = remaining ? '计时期间下一组不可完成' : '最低休息已到，由你决定何时继续'
+    document.querySelectorAll('[data-action="complete-set"]:not(.done)').forEach(button => { button.disabled = remaining > 0 })
+    document.querySelector('.timer')?.classList.toggle('done', remaining === 0)
+  }
+
+  function nextExercise() {
+    const state = store.load()
+    const session = state.activeSession
+    const part = session.parts[session.partIndex]
+    if ((session.exerciseIndex || 0) < part.exercises.length - 1) {
+      session.exerciseIndex = (session.exerciseIndex || 0) + 1
+      store.save(state)
+      renderWorkout()
+      return
+    }
+    const slot = engine.getCurrentSlot(state)
+    const current = session.currentPlanPartIndex
+    if (current < slot.parts.length - 1) {
+      const nextPartIndex = current + 1
+      const routine = engine.getRoutine(state, slot.id, nextPartIndex)
+      if (!routine) return navigate('category', { index: nextPartIndex })
+      const built = engine.createSession(state, routine)
+      const selectedPart = built.parts.find(item => item.name === slot.parts[nextPartIndex].name)
+      session.parts.push(selectedPart)
+      session.partIndex = session.parts.length - 1
+      session.exerciseIndex = 0
+      session.currentPlanPartIndex = nextPartIndex
+      store.save(state)
+      renderWorkout()
+      return
+    }
+    if (!confirm('确认完成本次训练？只有确认后才推进训练分化。')) return
+    store.save(engine.finishSession(state, 'completed'))
+    toast('训练已完成，循环已推进')
+    navigate('today')
+  }
+
+  function renderRecords() {
+    const state = store.load()
+    const summaries = engine.exerciseSummaries(state)
+    app.innerHTML = `<h1>记录</h1><div class="sub">进步与历史</div>
+      <div class="group">动作进步</div>
+      ${summaries.length ? summaries.map(item => `<div class="history row" data-action="exercise-history" data-name="${esc(item.name)}"><span><b>${esc(item.name)}</b><br><span class="hint">上次 ${esc(item.last.date)} · ${item.count} 次训练记录</span></span><span class="orange">历史 ›</span></div>`).join('') : '<div class="empty">暂无真实训练记录，不生成示例数据。</div>'}
+      <div class="group">训练历史</div>
+      ${state.history.length ? state.history.map(record => `<div class="history row" data-action="record" data-id="${esc(record.id)}"><span><b>${esc(record.title)}</b><br><span class="hint">${esc(record.date)} · ${record.status === 'completed' ? '已完成' : record.status === 'skipped' ? '已跳过' : '部分完成'}</span></span><span class="orange">查看 ›</span></div>`).join('') : '<div class="empty">完成训练后，逐组记录会出现在这里。</div>'}`
+  }
+
+  function renderRecord() {
+    const record = store.load().history.find(item => item.id === routeData.id)
+    if (!record) return navigate('records')
+    app.innerHTML = `<button class="small-button" data-action="back-records">‹ 返回记录</button><h1 style="margin-top:12px">${esc(record.title)}</h1><div class="sub">${esc(record.date)}</div>
+      ${(record.parts || []).map((part, partIndex) => `<section class="card"><h2>${esc(part.name)}</h2>${part.exercises.map((exercise, exerciseIndex) => `<div style="margin-top:12px"><b>${esc(exercise.name)}</b>
+        ${exercise.sets.map((set, setIndex) => `<div class="record-set ${set.done ? 'done' : ''}">第 ${set.index} 组　${set.done ? `<input class="history-edit" data-session="${esc(record.id)}" data-part="${partIndex}" data-exercise="${exerciseIndex}" data-set="${setIndex}" data-field="weight" value="${esc(set.weight)}"> kg × <input class="history-edit" data-session="${esc(record.id)}" data-part="${partIndex}" data-exercise="${exerciseIndex}" data-set="${setIndex}" data-field="reps" value="${esc(set.reps)}"> 次` : '未完成'}</div>`).join('')}</div>`).join('')}</section>`).join('')}`
+  }
+
+  function renderExerciseHistory() {
+    const rows = engine.listExerciseHistory(store.load(), routeData.name, 'kg')
+    app.innerHTML = `<button class="small-button" data-action="back-records">‹ 返回记录</button>
+      <h1 style="margin-top:12px">${esc(routeData.name)}</h1><div class="sub">仅比较相同单位 kg 的完成记录</div>
+      ${rows.length ? rows.map(row => `<div class="card history" data-action="record" data-id="${esc(row.sessionId)}"><div class="row"><b>${esc(row.date)}</b><span class="orange">纠错 ›</span></div>
+        <div class="previous-performance">${row.sets.map(set => `${esc(set.weight || '—')} kg × ${esc(set.reps || '—')}`).join('　')}</div></div>`).join('') : '<div class="empty">暂无记录</div>'}`
+  }
+
+  function renderSettings() {
+    const state = store.load()
+    app.innerHTML = `<h1>设置</h1>
+      <div class="group">个人与安全</div><section class="setting"><label>显示名称</label><input id="display-name" value="${esc(state.settings.displayName)}"></section>
+      <section class="setting row"><span>血压仍未确认<br><span class="hint">开启时显示保守训练提醒</span></span><input id="bp-toggle" type="checkbox" style="width:auto" ${state.settings.bpUnconfirmed ? 'checked' : ''}></section>
+      <div class="group">训练安排</div><section class="setting"><label>训练循环</label><select id="template-select">${Object.values(plans.templates).map(template => `<option value="${template.id}" ${template.id === state.settings.templateId ? 'selected' : ''}>${esc(template.name)}</option>`).join('')}</select></section>
+      <section class="setting"><label>训练时间模式（只改提醒，不动循环）</label><select id="time-select">${['早上','中午','下午','晚上'].map(value => `<option ${value === state.settings.timePeriod ? 'selected' : ''}>${value}</option>`).join('')}</select><div class="hint">${esc(state.settings.mealRelation)}</div></section>
+      <div class="group">默认最低休息</div>
+      ${[['compound','复合动作','参考 120–180 秒'],['isolation','孤立动作','参考 60–90 秒'],['leg','蹲 / 硬拉','原表只说“可更长”']].map(([key,name,note]) => `<section class="setting"><label>${name} · ${note}</label><select data-rest="${key}">${[60,90,120,150,180,240].map(n => `<option value="${n}" ${n === state.settings.rests[key] ? 'selected' : ''}>${n} 秒</option>`).join('')}</select></section>`).join('')}
+      <section class="card safety hint">本工具不是医学定制。胸痛、明显气促、晕厥等危险症状应停止并及时就医，不继续轻练。</section>`
+  }
+
+  function render() {
+    tabs.hidden = route === 'category' || route === 'workout' || route === 'record' || route === 'exercise-history'
+    tabs.querySelectorAll('button').forEach(button => button.classList.toggle('active', button.dataset.route === route))
+    if (route === 'today') renderToday()
+    else if (route === 'category') renderCategory()
+    else if (route === 'workout') renderWorkout()
+    else if (route === 'records') renderRecords()
+    else if (route === 'record') renderRecord()
+    else if (route === 'exercise-history') renderExerciseHistory()
+    else renderSettings()
+  }
+
+  tabs.addEventListener('click', event => {
+    const button = event.target.closest('[data-route]')
+    if (button) navigate(button.dataset.route)
+  })
+
+  app.addEventListener('submit', event => {
+    event.preventDefault()
+    if (event.target.id === 'category-form') startPart(event.target)
+    if (event.target.id === 'metric-form') {
+      const data = new FormData(event.target)
+      const weight = Number(data.get('weight'))
+      if (weight < 30 || weight > 400) return toast('请输入有效体重')
+      const state = store.load()
+      state.metrics.unshift({ id: `m-${Date.now()}`, date: engine.todayKey(), at: Date.now(), weight, waist: Number(data.get('waist')) || null })
+      store.save(state); toast('身体记录已保存'); renderRecords()
+    }
+  })
+
+  app.addEventListener('input', event => {
+    if (route === 'workout' && event.target.dataset.field) {
+      const row = event.target.closest('.set-grid')
+      if (!row) return
+      const state = store.load()
+      state.activeSession = engine.updateActiveSet(
+        state.activeSession,
+        state.activeSession.partIndex,
+        Number(row.dataset.exercise),
+        Number(row.dataset.set),
+        { [event.target.dataset.field]: event.target.value }
+      )
+      store.save(state)
+    }
+    if (event.target.classList.contains('history-edit')) {
+      const data = event.target.dataset
+      const state = engine.editHistorySet(
+        store.load(), data.session, Number(data.part), Number(data.exercise), Number(data.set),
+        { [data.field]: event.target.value, unit: 'kg' }
+      )
+      store.save(state)
+    }
+  })
+
+  app.addEventListener('change', event => {
+    if (event.target.classList.contains('config-type')) {
+      const state = store.load()
+      const slot = engine.getCurrentSlot(state)
+      const part = slot.parts[Number(document.querySelector('#category-form').dataset.index)]
+      const pattern = part.patterns.find(item => item.id === event.target.value)
+      const row = event.target.closest('.config-row')
+      const exercise = row.querySelector('.config-exercise')
+      exercise.disabled = !pattern
+      exercise.innerHTML = pattern
+        ? `<option value="">请选择具体动作</option>${pattern.options.map(name => `<option value="${esc(name)}">${esc(name)}</option>`).join('')}`
+        : '<option value="">先选动作类型</option>'
+      row.querySelector('.config-sets').value = pattern ? pattern.suggestedSets : 3
+      row.querySelector('.config-source').textContent = pattern
+        ? `${pattern.role} · ${pattern.sourceTotal}`
+        : '选择类型后显示原表类别说明'
+      const error = document.querySelector('#category-error')
+      if (error) { error.textContent = ''; error.classList.remove('show') }
+    }
+    if (event.target.id === 'rest-adjust' && event.target.value) {
+      const state = store.load()
+      state.activeSession = engine.adjustRest(state.activeSession, Number(event.target.value))
+      store.save(state); renderWorkout(); toast('已从本组完成时间重新计算')
+    }
+    if (event.target.id === 'bp-toggle') {
+      const state = store.load(); state.settings.bpUnconfirmed = event.target.checked; store.save(state)
+    }
+    if (event.target.id === 'display-name') {
+      const state = store.load(); state.settings.displayName = event.target.value.trim() || '太岁'; store.save(state)
+    }
+    if (event.target.id === 'time-select') {
+      const state = store.load(); state.settings.timePeriod = event.target.value
+      state.settings.mealRelation = event.target.value === '下午' ? '产品映射：接近午饭后或晚饭前，请按实际安排' : `${event.target.value}训练，饭前/饭后按实际安排`
+      store.save(state); renderSettings()
+    }
+    if (event.target.id === 'template-select') {
+      const state = store.load()
+      if (state.activeSession) { event.target.value = state.settings.templateId; return alert('有进行中的训练，请先恢复或保存结束。') }
+      if (confirm('切换循环会从 Day1 开始，但不会清空历史。是否继续？')) {
+        store.save(engine.changeTemplate(state, event.target.value)); renderSettings()
+      } else event.target.value = state.settings.templateId
+    }
+    if (event.target.dataset.rest) {
+      const state = store.load(); state.settings.rests[event.target.dataset.rest] = Number(event.target.value); store.save(state)
+    }
+  })
+
+  app.addEventListener('click', event => {
+    const target = event.target.closest('[data-action]')
+    if (!target) return
+    const action = target.dataset.action
+    if (action === 'confirm-first-template') {
+      const selected = document.querySelector('#first-template').value
+      const state = store.load()
+      const next = selected === state.settings.templateId ? state : engine.changeTemplate(state, selected)
+      next.settings.templateConfirmed = true
+      store.save(next)
+      renderToday()
+    }
+    if (action === 'category') navigate('category', { index: Number(target.dataset.index) })
+    if (action === 'start-training') {
+      event.preventDefault()
+      try {
+        const form = target.closest('#category-form')
+        if (!form) throw new Error('找不到动作配置表单')
+        startPart(form)
+      } catch (cause) {
+        console.error(cause)
+        const error = document.querySelector('#category-error')
+        const diagnostic = document.querySelector('#start-diagnostic')
+        if (error) {
+          error.textContent = `无法开始训练：${cause && cause.message ? cause.message : '当前查看器阻止了按钮操作'}`
+          error.classList.add('show')
+        }
+        if (diagnostic) diagnostic.textContent = `阶段：按钮处理失败\n异常：${cause && cause.message ? cause.message : String(cause)}`
+      }
+    }
+    if (action === 'add-config') {
+      routeData.rows = readConfigRows()
+      routeData.rows.push({ patternId: '', name: '', sets: 3 })
+      renderCategory()
+    }
+    if (action === 'remove-config') {
+      routeData.rows = readConfigRows().filter((_, index) => index !== Number(target.dataset.index))
+      renderCategory()
+    }
+    if (action === 'start-routine') startRoutine(Number(target.dataset.index))
+    if (action === 'resume') navigate('workout')
+    if (action === 'rest') toast('今天休息，循环位置保持不变')
+    if (action === 'skip' && confirm('跳过会推进一次循环；休息不会推进。确认跳过？')) {
+      store.save(engine.advance(store.load(), 'skip')); toast('已跳过当前槽位'); renderToday()
+    }
+    if (action === 'complete-set') completeSet(target)
+    if (action === 'extend') {
+      const state = store.load(); state.activeSession = engine.extendRest(state.activeSession, 30); store.save(state); renderWorkout()
+    }
+    if (action === 'next-exercise') nextExercise()
+    if (action === 'previous-exercise') {
+      const state = store.load()
+      if ((state.activeSession.exerciseIndex || 0) > 0) state.activeSession.exerciseIndex -= 1
+      store.save(state); renderWorkout()
+    }
+    if (action === 'edit-part') {
+      const state = store.load()
+      navigate('category', { index: state.activeSession.currentPlanPartIndex })
+    }
+    if (action === 'partial' && confirm('保存已完成的组并结束？循环不会推进。')) {
+      store.save(engine.finishSession(store.load(), 'partial')); toast('部分完成已保存'); navigate('today')
+    }
+    if (action === 'record') navigate('record', { id: target.dataset.id })
+    if (action === 'exercise-history') navigate('exercise-history', { name: target.dataset.name })
+    if (action === 'back-records') navigate('records')
+  })
+
+  setInterval(tick, 500)
+  render()
+})(window)
+
+</script>
+</body>
+</html>

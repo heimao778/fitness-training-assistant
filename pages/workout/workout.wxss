@@ -1,0 +1,21 @@
+.timer { text-align: center; }
+.clock { font-size: 84rpx; font-weight: 650; margin: 12rpx 0; font-variant-numeric: tabular-nums; }
+.timer-actions { display: flex; gap: 15rpx; margin-top: 25rpx; }
+.timer-button { flex: 1; font-size: 25rpx; --td-button-default-bg-color: #29292b; }
+.last-date { margin-top: 12rpx; font-size: 24rpx; color: #aaa; }
+.last-sets { margin-top: 12rpx; color: #f2c6a7; line-height: 1.8; }
+.empty-last { color: #777; margin-top: 14rpx; }
+.role { color: #f47721; font-size: 23rpx; margin-top: 4rpx; }
+.source { color: #8d8d8d; font-size: 22rpx; margin-top: 18rpx; }
+.grid { display: grid; grid-template-columns: 56rpx 1fr 1fr 120rpx; align-items: center; gap: 12rpx; text-align: center; }
+.set-head { color: #777; font-size: 22rpx; margin: 25rpx 0 10rpx; }
+.set-row { border-top: 1rpx solid #29292b; padding: 14rpx 0; }
+.set-input { min-height: 64rpx; background: #222224; border-radius: 8rpx; --td-input-bg-color: #222224; --td-input-text-color: #fff; }
+.set-check { width: 100%; --td-button-default-bg-color: #343436; --td-button-default-color: #ddd; }
+.set-check-done { --td-button-primary-bg-color: #ff853b; }
+.actions { display: flex; gap: 16rpx; align-items: stretch; margin-top: 32rpx; }
+.actions .next { flex: 2; margin-top: 0; }
+.actions .previous { flex: 1; margin-top: 0; }
+.next { --td-button-primary-bg-color: #ff853b; }
+.previous, .end { --td-button-default-bg-color: #29292b; --td-button-default-color: #eee; }
+.end { margin-top: 16rpx; width: 100%; }

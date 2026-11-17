@@ -1,0 +1,31 @@
+<view class="page" wx:if="{{state}}">
+  <view class="title">设置</view>
+  <view class="group-title">个人与安全</view>
+  <t-cell-group t-class="settings-group">
+    <t-input label="显示名称" align="right" borderless value="{{state.settings.displayName}}" bindchange="nameInput" />
+    <t-cell title="血压仍未确认" note="开启时显示保守训练提醒">
+      <t-switch slot="right-icon" value="{{state.settings.bpUnconfirmed}}" bindchange="toggleBp" />
+    </t-cell>
+  </t-cell-group>
+
+  <view class="group-title">训练安排</view>
+  <t-cell-group t-class="settings-group">
+    <t-cell title="训练循环" note="{{state.settings.templateId === 'gym3' ? '健身房三分化' : state.settings.templateId === 'gym4shoulder' ? '四分化 · 肩单练' : state.settings.templateId === 'gym4arms' ? '四分化 · 手臂单练' : '居家三分化'}}" arrow bindtap="chooseTemplate" />
+    <t-cell title="训练时间模式" note="{{state.settings.timePeriod}} · {{state.settings.mealRelation}}" arrow bindtap="chooseTime" />
+  </t-cell-group>
+  <view class="notice map-note">时间模式只改变饭前/饭后的产品提醒，不改变训练循环。“下午”是产品映射，原表无独立下午项；不把餐序当医学限制，也不建议空腹做高强度训练。</view>
+
+  <view class="group-title">默认最低休息</view>
+  <t-cell-group t-class="settings-group">
+    <t-cell title="复合动作" note="{{state.settings.rests.compound}} 秒 · 参考建议 120–180 秒" arrow data-type="compound" bindtap="chooseRest" />
+    <t-cell title="孤立动作" note="{{state.settings.rests.isolation}} 秒 · 参考建议 60–90 秒" arrow data-type="isolation" bindtap="chooseRest" />
+    <t-cell title="蹲 / 硬拉" note="{{state.settings.rests.leg}} 秒 · 原表只说“可更长”" arrow data-type="leg" bindtap="chooseRest" />
+  </t-cell-group>
+
+  <view class="group-title">常用动作器械</view>
+  <view class="empty muted" wx:if="{{!favoriteList.length}}">完成一次动作选择后，这里会保存你的常用选择。</view>
+  <view class="favorite" wx:for="{{favoriteList}}" wx:key="key">{{item.name}}</view>
+  <t-button t-class="clear" theme="default" block wx:if="{{favoriteList.length}}" bindtap="clearFavorites">清除常用选择</t-button>
+
+  <view class="notice safe">本工具不是医学定制。一般疲劳可减量或多休息；胸痛、明显气促、晕厥等危险症状应停止并及时就医，不继续轻练。</view>
+</view>

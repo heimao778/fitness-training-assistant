@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>太岁 · 训练助手浏览器预览</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="preview-banner">浏览器预览，非微信运行 · 数据仅保存在本机浏览器</div>
+  <main id="app" aria-live="polite">
+    <section class="startup-fallback">
+      <h1>训练助手试用版</h1>
+      <p class="sub">允许脚本时会自动启动交互功能。</p>
+      <div class="card safety">
+        <strong>如果这里一直不变</strong>
+        <p>当前聊天附件查看器可能禁止运行脚本。请先把 HTML 文件下载到手机，再选择 Chrome、Edge、小米浏览器等系统浏览器打开。</p>
+        <p class="hint">禁用脚本时只能查看说明，不能记录训练；应用不会假装已经保存数据。</p>
+      </div>
+      <div class="card">
+        <strong>可试功能</strong>
+        <p>选择训练分化 → 设置部位动作和组数 → 逐组填写重量与次数 → 休息计时 → 查看动作历史。</p>
+      </div>
+    </section>
+  </main>
+  <nav id="tabs">
+    <button data-route="today">⌂<span>今天</span></button>
+    <button data-route="records">▥<span>记录</span></button>
+    <button data-route="settings">⚙<span>设置</span></button>
+  </nav>
+  <div id="toast" role="status"></div>
+  <script>
+    window.addEventListener('error', function () {
+      var app = document.getElementById('app')
+      if (!app || !app.querySelector('.startup-fallback')) return
+      var subtitle = app.querySelector('.startup-fallback .sub')
+      if (subtitle) subtitle.textContent = '交互功能未能启动，请下载后改用系统浏览器打开。'
+    })
+  </script>
+  <script src="/storage-adapter.js"></script>
+  <script src="/core.js"></script>
+  <script src="/preview.js"></script>
+</body>
+</html>

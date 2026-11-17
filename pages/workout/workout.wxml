@@ -1,0 +1,65 @@
+<view class="page" wx:if="{{part}}">
+  <view class="muted">{{session.title}}</view>
+  <view class="row">
+    <view>
+      <view class="subtitle">{{part.name}} · 动作 {{exerciseIndex + 1}} / {{part.exercises.length}}</view>
+      <view class="title">{{exercise.name}}</view>
+    </view>
+    <t-tag theme="warning" variant="light" bindtap="editPart">编辑动作</t-tag>
+  </view>
+  <view class="subtitle">{{exercise.patternName}} · 每组留 2–3 次余力，不憋气</view>
+
+  <view class="last card">
+    <view class="muted">上次同动作</view>
+    <view wx:if="{{lastPerformance}}">
+      <view class="last-date">{{lastPerformance.date}} · 单位 {{lastPerformance.unit}}</view>
+      <view class="last-sets">
+        <text wx:for="{{lastPerformance.sets}}" wx:key="index">{{item.weight || '—'}} kg × {{item.reps || '—'}}<text wx:if="{{index < lastPerformance.sets.length - 1}}">　</text></text>
+      </view>
+    </view>
+    <view class="empty-last" wx:else>暂无真实记录，完成训练后这里会显示。</view>
+  </view>
+
+  <view class="timer card" wx:if="{{session.rest}}">
+    <view class="muted">最低休息</view>
+    <view class="clock {{remaining === 0 ? 'orange' : ''}}">{{clock}}</view>
+    <view class="muted">{{remaining === 0 ? '最低休息已到，由你决定何时继续' : '计时期间下一组不可完成'}}</view>
+    <view class="timer-actions">
+      <t-button t-class="timer-button" theme="default" block bindtap="adjustRest">调整时长</t-button>
+      <t-button t-class="timer-button" theme="default" block bindtap="extend">延长 30 秒</t-button>
+    </view>
+  </view>
+
+  <view class="card exercise">
+    <view class="row">
+      <view>
+        <view class="card-title">本次记录</view>
+        <view class="role">{{exercise.role}}</view>
+      </view>
+      <view class="pill">{{exercise.sets.length}} 组</view>
+    </view>
+    <view class="source">{{exercise.sourceTotal}}；输入即自动保存</view>
+    <view class="set-head grid"><text>组</text><text>重量 kg</text><text>次数</text><text>完成</text></view>
+    <view class="set-row grid" wx:for="{{exercise.sets}}" wx:key="index" wx:for-item="setItem" wx:for-index="setIndex">
+      <text>{{setItem.index}}</text>
+      <t-input t-class="set-input" type="digit" value="{{setItem.weight}}" disabled="{{setItem.done}}" align="center" borderless data-set="{{setIndex}}" data-field="weight" bindchange="input" placeholder="—" />
+      <t-input t-class="set-input" type="number" value="{{setItem.reps}}" disabled="{{setItem.done}}" align="center" borderless data-set="{{setIndex}}" data-field="reps" bindchange="input" placeholder="—" />
+      <t-button t-class="set-check {{setItem.done ? 'set-check-done' : ''}}" size="small" theme="{{setItem.done ? 'primary' : 'default'}}" disabled="{{remaining > 0 || setItem.done || saving}}" data-set="{{setIndex}}" bindtap="completeSet">{{setItem.done ? '✓' : '完成'}}</t-button>
+    </view>
+  </view>
+  <view class="actions">
+    <t-button t-class="previous" theme="default" size="large" wx:if="{{exerciseIndex > 0}}" bindtap="previousExercise">上一个动作</t-button>
+    <t-button t-class="next" theme="primary" size="large" bindtap="nextExercise">{{exerciseIndex < part.exercises.length - 1 ? '下一个动作' : '完成本部位'}}</t-button>
+  </view>
+  <t-button t-class="end" theme="default" size="large" block bindtap="savePartial">保存并结束（允许部分完成）</t-button>
+  <t-dialog
+    visible="{{confirmVisible}}"
+    title="确认完成本次训练？"
+    content="只有确认完成后才会推进到下一个训练分化。记录单组、返回或刷新都不会推进。"
+    confirm-btn="确认完成"
+    cancel-btn="继续记录"
+    close-on-overlay-click="{{false}}"
+    bindconfirm="confirmCompleteAction"
+    bindcancel="cancelComplete"
+  />
+</view>

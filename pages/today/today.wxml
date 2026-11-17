@@ -1,0 +1,63 @@
+<view class="page" wx:if="{{state}}">
+  <view class="row">
+    <view>
+      <view class="title">今天练什么</view>
+      <view class="subtitle">{{dateText}} · {{templateName}}</view>
+    </view>
+    <view class="pill" bindtap="showSafety">身体状态</view>
+  </view>
+
+  <view class="card onboarding" wx:if="{{!state.settings.templateConfirmed}}">
+    <view class="card-title">先选择你的训练分化</view>
+    <view class="notice">只需首次选择，之后可在设置中修改。历史记录不会因修改而清空。</view>
+    <t-button t-class="td-primary compact" theme="primary" size="large" block bindtap="chooseTemplate">选择分化方案</t-button>
+  </view>
+
+  <view class="safe card" wx:if="{{state.settings.templateConfirmed && state.settings.bpUnconfirmed}}">
+    <view class="card-title">血压仍未确认 · 保守训练</view>
+    <view class="notice">不憋气、不做极限/力竭/HIIT/1RM。胸痛、明显气促或晕厥时停止并及时就医。</view>
+  </view>
+
+  <block wx:if="{{state.settings.templateConfirmed}}">
+  <view class="card">
+    <view class="muted">当前槽位</view>
+    <view class="hero">{{slot.title}}</view>
+    <view class="subtitle" wx:if="{{slot.isLeg && state.settings.templateId !== 'home3'}}">
+      本次重点：{{state.rotation.legFocus === 'quads' ? '股四头 + 兼练' : '腘绳肌 + 兼练'}}
+    </view>
+    <view class="subtitle" wx:if="{{state.settings.templateId === 'home3' && slot.isLeg}}">居家循环不套用健身房腿部交替</view>
+  </view>
+
+  <view class="section-title">按顺序完成部位</view>
+  <view class="part row" wx:for="{{slot.parts}}" wx:key="name" data-index="{{index}}" bindtap="openPart">
+    <view class="row left">
+      <view class="number">{{index + 1}}</view>
+      <view>
+        <view class="part-name">{{item.name}}</view>
+        <view class="muted small">{{item.patterns.length}} 个动作类别</view>
+      </view>
+    </view>
+    <view class="state">{{index === 0 ? '当前' : '待开始'}} ›</view>
+  </view>
+
+  <t-button t-class="td-primary action-main" theme="primary" size="large" block wx:if="{{!state.activeSession}}" data-index="0" bindtap="openPart">开始当前部位</t-button>
+  <t-button t-class="td-primary action-main" theme="primary" size="large" block wx:else bindtap="resume">恢复进行中的训练</t-button>
+  <view class="minor-actions">
+    <t-button t-class="td-secondary" theme="default" block bindtap="restDay">今天休息</t-button>
+    <t-button t-class="td-secondary" theme="default" block bindtap="moveTomorrow">改到明天</t-button>
+    <t-button t-class="td-secondary" theme="default" block bindtap="skip">跳过槽位</t-button>
+  </view>
+  <view class="notice center">休息不推进 · 完成或确认跳过后进入下一槽位</view>
+
+  </block>
+
+  <view class="mask" wx:if="{{safetyOpen}}" bindtap="closeSafety">
+    <view class="sheet" catchtap="noop">
+      <view class="card-title">开始前身体状态</view>
+      <view class="choice" data-value="normal" bindtap="chooseCondition">状态正常，按保守强度训练</view>
+      <view class="choice" data-value="tired" bindtap="chooseCondition">一般疲劳，今天减组或延长休息</view>
+      <view class="choice danger" data-value="danger" bindtap="chooseCondition">胸痛 / 明显气促 / 晕厥等危险症状</view>
+      <view class="notice">不要求填写血压或其他敏感健康资料。本工具不提供诊断。</view>
+    </view>
+  </view>
+</view>

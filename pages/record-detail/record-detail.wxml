@@ -1,0 +1,22 @@
+<view class="page" wx:if="{{record}}">
+  <view class="title">{{record.title}}</view>
+  <view class="subtitle">{{record.date}} · {{record.status === 'completed' ? '已完成' : record.status === 'skipped' ? '已跳过' : '部分完成'}}</view>
+  <block wx:if="{{record.parts}}">
+    <view class="card" wx:for="{{record.parts}}" wx:key="name" wx:for-item="part" wx:for-index="partIndex">
+      <view class="card-title">{{part.name}}</view>
+      <view class="exercise" wx:for="{{part.exercises}}" wx:key="patternId" wx:for-item="ex" wx:for-index="exIndex">
+        <view class="row"><text>{{ex.name}}</text><text class="muted">{{ex.patternName}}</text></view>
+        <view class="set {{set.done ? 'done' : ''}}" wx:for="{{ex.sets}}" wx:key="index" wx:for-item="set" wx:for-index="setIndex">
+          <text>第 {{set.index}} 组</text>
+          <block wx:if="{{set.done}}">
+            <t-input t-class="edit-input" type="digit" align="center" borderless value="{{set.weight}}" data-part="{{partIndex}}" data-exercise="{{exIndex}}" data-set="{{setIndex}}" data-field="weight" bindchange="editSet" />
+            <text>kg ×</text>
+            <t-input t-class="edit-input" type="number" align="center" borderless value="{{set.reps}}" data-part="{{partIndex}}" data-exercise="{{exIndex}}" data-set="{{setIndex}}" data-field="reps" bindchange="editSet" />
+            <text>次</text>
+          </block>
+          <text wx:else>未完成</text>
+        </view>
+      </view>
+    </view>
+  </block>
+</view>

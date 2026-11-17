@@ -1,0 +1,29 @@
+<view class="page" wx:if="{{part}}">
+  <view class="title">{{part.name}}</view>
+  <view class="subtitle">按动作类别选择 · 保持原表顺序</view>
+
+  <view class="card" wx:for="{{part.patterns}}" wx:key="id">
+    <view class="row">
+      <view>
+        <view class="card-title">{{item.name}}</view>
+        <view class="role">{{item.role}}</view>
+      </view>
+      <view class="pill active">{{item.restType === 'isolation' ? '孤立' : '复合'}}</view>
+    </view>
+    <view class="source">{{item.sourceTotal}} · 本次组数是可调建议</view>
+    <view class="selector row" data-id="{{item.id}}" bindtap="pick">
+      <view class="{{choices[item.id].name ? '' : 'muted'}}">{{choices[item.id].name || ((item.role === '可选' || item.role === '可选补充（不等价于划船）') ? '不添加（可选）' : '待选择可用器械/形式')}}</view><view class="orange">{{choices[item.id].name ? '更换' : '选择'}} ›</view>
+    </view>
+    <view class="row sets">
+      <view class="muted">本次组数（建议）</view>
+      <view class="stepper">
+        <text data-id="{{item.id}}" data-delta="-1" bindtap="changeSets">−</text>
+        <text class="count">{{choices[item.id].sets}}</text>
+        <text data-id="{{item.id}}" data-delta="1" bindtap="changeSets">＋</text>
+      </view>
+    </view>
+    <view class="notice" wx:if="{{item.id === 'straight-arm'}}">直臂下压是可选单关节补充，不替代水平划船。</view>
+  </view>
+  <view class="notice">器械名称来自原表，不假设场馆具备品牌或具体型号。组数按类别合计，不会复制到每个动作。</view>
+  <t-button t-class="category-start" theme="primary" size="large" block bindtap="start">保存配置并开始</t-button>
+</view>

@@ -1,0 +1,14 @@
+<view class="page">
+  <view class="title">记录</view>
+  <view class="subtitle">动作进步与训练历史</view>
+  <view class="section">动作进步</view>
+  <view class="empty muted" wx:if="{{!summaries.length}}">暂无真实训练记录。完成动作后再显示，不生成示例数据。</view>
+  <t-cell-group t-class="record-group" wx:if="{{summaries.length}}">
+    <t-cell wx:for="{{summaries}}" wx:key="name" title="{{item.name}}" note="上次 {{item.last.date}} · {{item.count}} 次训练记录" arrow data-name="{{item.name}}" bindtap="exerciseHistory" />
+  </t-cell-group>
+  <view class="section">训练历史</view>
+  <view class="empty muted" wx:if="{{!history.length}}">完成或部分结束一次训练后，逐组记录会出现在这里。</view>
+  <t-cell-group t-class="record-group" wx:if="{{history.length}}">
+    <t-cell wx:for="{{history}}" wx:key="id" title="{{item.title}}" note="{{item.date}} · {{item.status === 'completed' ? '已完成' : item.status === 'skipped' ? '已跳过' : '部分完成'}}" arrow data-id="{{item.id}}" bindtap="detail" />
+  </t-cell-group>
+</view>

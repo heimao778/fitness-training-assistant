@@ -1,0 +1,50 @@
+page {
+  --td-brand-color: #ff853b;
+  --td-brand-color-active: #e96f25;
+  --td-brand-color-disabled: #744528;
+  --td-bg-color-page: #0c0c0d;
+  --td-bg-color-container: #161617;
+  --td-bg-color-secondarycontainer: #202022;
+  --td-bg-color-component: #29292b;
+  --td-bg-color-component-active: #353538;
+  --td-text-color-primary: #f5f1eb;
+  --td-text-color-secondary: #aaaaad;
+  --td-text-color-placeholder: #6f6f72;
+  --td-component-border: #303033;
+  --td-button-primary-bg-color: #ff853b;
+  --td-button-primary-active-bg-color: #e96f25;
+  --td-button-default-bg-color: #29292b;
+  --td-button-default-color: #f5f1eb;
+  --td-button-default-border-color: #29292b;
+  --td-input-bg-color: #202022;
+  --td-input-text-color: #f5f1eb;
+  --td-cell-bg-color: #161617;
+  --td-cell-title-color: #f5f1eb;
+  min-height: 100%;
+  background: #0c0c0d;
+  color: #f5f1eb;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+  font-size: 28rpx;
+}
+.page { padding: 34rpx 30rpx 60rpx; box-sizing: border-box; }
+.title { font-size: 46rpx; font-weight: 700; letter-spacing: 1rpx; }
+.subtitle { color: #989898; margin-top: 8rpx; }
+.card { background: #161617; border: 1rpx solid #29292b; border-radius: 18rpx; padding: 28rpx; margin-top: 24rpx; }
+.card-title { font-size: 32rpx; font-weight: 650; }
+.muted { color: #929292; }
+.orange { color: #f47721; }
+.btn {
+  height: 92rpx; line-height: 92rpx; border-radius: 13rpx; background: #e96618;
+  color: #fff; font-size: 31rpx; font-weight: 600; text-align: center; padding: 0;
+}
+.btn::after, .ghost::after { border: 0; }
+.ghost { background: #242426; color: #ddd; height: 78rpx; line-height: 78rpx; border-radius: 12rpx; }
+.danger { color: #ff806f; }
+.row { display: flex; align-items: center; justify-content: space-between; }
+.divider { height: 1rpx; background: #2b2b2d; margin: 22rpx 0; }
+.input { background: #202022; border-radius: 10rpx; padding: 20rpx; color: #fff; }
+.pill { padding: 8rpx 16rpx; background: #292929; border-radius: 999rpx; color: #aaa; font-size: 24rpx; }
+.pill.active { color: #ffc39c; background: #4a2917; }
+.notice { color: #b5b5b5; font-size: 24rpx; line-height: 1.65; }
+.safe { border-left: 5rpx solid #f47721; padding-left: 20rpx; }
+button[disabled] { opacity: .42; }

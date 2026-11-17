@@ -1,0 +1,17 @@
+{
+  "name": "native-fitness-coach",
+  "version": "1.0.0",
+  "private": true,
+  "description": "原生微信小程序个人训练助手",
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "preview": "node web/server.js",
+    "preview:smoke": "node scripts/browser-smoke.js",
+    "export:html": "node scripts/export-single-html.js",
+    "test:single-html": "node scripts/single-html-smoke.js"
+  },
+  "dependencies": {
+    "tdesign-miniprogram": "1.18.0",
+    "tslib": "2.9.1"
+  }
+}

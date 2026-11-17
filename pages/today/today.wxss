@@ -1,0 +1,17 @@
+.hero { font-size: 42rpx; font-weight: 700; margin-top: 12rpx; }
+.section-title { color: #aaa; margin: 44rpx 0 12rpx; }
+.part { padding: 27rpx 2rpx; border-bottom: 1rpx solid #252527; }
+.left { justify-content: flex-start; }
+.number { width: 40rpx; height: 40rpx; line-height: 40rpx; border-radius: 50%; background: #dd621a; text-align: center; margin-right: 20rpx; font-weight: 700; }
+.part-name { font-size: 31rpx; }
+.small { font-size: 23rpx; margin-top: 5rpx; }
+.state { color: #b8b8b8; }
+.action-main { margin-top: 50rpx; border-radius: 14rpx; }
+.compact { margin-top: 24rpx; border-radius: 14rpx; }
+.td-primary { --td-button-primary-bg-color: #ff853b; --td-button-primary-active-bg-color: #e96f25; }
+.td-secondary { flex: 1; --td-button-default-bg-color: #242426; --td-button-default-color: #ddd; }
+.minor-actions { display: flex; gap: 18rpx; margin-top: 18rpx; }
+.center { text-align: center; margin-top: 20rpx; }
+.mask { position: fixed; inset: 0; background: rgba(0,0,0,.7); display: flex; align-items: flex-end; z-index: 10; }
+.sheet { width: 100%; background: #181819; border-radius: 28rpx 28rpx 0 0; padding: 40rpx 30rpx 70rpx; box-sizing: border-box; }
+.choice { background: #242426; padding: 28rpx 22rpx; margin-top: 18rpx; border-radius: 13rpx; }

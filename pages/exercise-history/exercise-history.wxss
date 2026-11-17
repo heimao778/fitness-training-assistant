@@ -1,0 +1,2 @@
+.sets { color: #f2c6a7; margin-top: 18rpx; line-height: 1.8; }
+.empty { text-align: center; padding: 80rpx 0; }

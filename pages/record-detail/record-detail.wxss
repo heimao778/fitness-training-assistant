@@ -1,0 +1,4 @@
+.exercise { margin-top: 28rpx; padding-top: 22rpx; border-top: 1rpx solid #2a2a2c; }
+.set { color: #777; padding: 14rpx 0; font-size: 25rpx; display: flex; align-items: center; gap: 10rpx; }
+.set.done { color: #f2f2f2; }
+.edit-input { width: 100rpx; background: #252527; border-radius: 8rpx; padding: 10rpx; text-align: center; color: #fff; }
